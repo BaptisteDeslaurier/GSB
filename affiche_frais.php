@@ -44,9 +44,9 @@
     <?php
 // Si on choisit une date dans la liste déroulante et valide on affiche
 if(isset($_POST['mois']) != false) {
-    phraseEtatFiche($connexion, $_POST['mois']);
+    phraseEtatFiche($connexion, $_POST['mois'], $_SESSION['id']);
 
-    montantFiche($connexion);
+    montantFiche($connexion, $_SESSION['id']);
     ?>
     
     <br/><br/>
@@ -60,7 +60,7 @@ if(isset($_POST['mois']) != false) {
             </tr>   
             <tr>
             <?php
-                ligneTableauForfait($connexion);
+                ligneTableauForfait($connexion, $_SESSION['id']);
              ?>
             </tr>
         </table>
@@ -73,7 +73,7 @@ if(isset($_POST['mois']) != false) {
           <td colspan='1' align='center'>Montant</td>
           </tr>
     <?php
-        ligneTableauHorsForfait($connexion);
+        ligneTableauHorsForfait($connexion, $_SESSION['id']);
     ?>
     </table>
     <br/><br/>

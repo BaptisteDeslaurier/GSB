@@ -22,7 +22,7 @@ function listeDeroulanteMoisAnnee($connexion) {
     $resultatRecherche->closeCursor();
 }
 
-function phraseEtatFiche($connexion, $mois) {
+function phraseEtatFiche($connexion, $mois, $id) {
     // Création d'une variable de session contenant le mois pour le cas où l'on veut créer le PDF
     $_SESSION['mois']=$mois;
     //echo $_POST['mois'];
@@ -48,7 +48,7 @@ function phraseEtatFiche($connexion, $mois) {
     echo "Fiche de frais du mois de ".$leMois." ".$lAnnee." : ".$etat. " depuis le ".$date;
 }
 
-function montantFiche($connexion) {
+function montantFiche($connexion, $id) {
     $resultat = $connexion->query('SELECT montantValide 
                                  FROM fichefrais 
                                  WHERE idVisiteur="'.$_SESSION['id'].'" 
@@ -61,7 +61,7 @@ function montantFiche($connexion) {
     }
 }
 
-function ligneTableauForfait($connexion) {
+function ligneTableauForfait($connexion, $id) {
     $resultat2 = $connexion->query('SELECT quantite
                                   FROM lignefraisforfait 
                                   WHERE idVisiteur="'.$_SESSION['id'].'" 
