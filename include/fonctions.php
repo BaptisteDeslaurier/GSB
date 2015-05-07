@@ -128,9 +128,9 @@ function ligneTableauHorsForfait($connexion, $id) {
 
          echo "
          <tr>
-             <td width='20%' align='center'>$date</td>             
-             <td width='60%' align='center'>$libelle</td>		 
-             <td width='20%' align='center'>$montant</td>
+             <td width='20%' align='center'>".$date."</td>             
+             <td width='60%' align='center'>".utf8_encode($libelle)."</td>		 
+             <td width='20%' align='center'>".$montant."</td>
          </tr>";
     }
     $resultatElementHorsForfait->closeCursor();
@@ -168,6 +168,7 @@ function updateFraisHorsForfait($connexion) {
     $id = $idMaxHF->fetch();
     $idMax = ($id['idMax']+1);
 
+    // §Insertion du nouveau élément hors forfait pour cette fiche frais
     $connexion->exec ('insert into lignefraishorsforfait values('.$idMax.', "'.$_SESSION['id'].'", "'.$_SESSION['annee_mois'].'", "'.$_POST['libelle'].'", "' .$_POST['date'].'", ' .$_POST['montant']. ')');
 
     header('location: saisie_frais.php');
