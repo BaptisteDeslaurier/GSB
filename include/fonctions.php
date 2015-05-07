@@ -38,25 +38,30 @@ function phraseEtatFiche($connexion, $mois, $id) {
     // Création d'une variable de session contenant le mois pour le cas où l'on veut créer le PDF
     $_SESSION['mois']=$mois;
     //echo $_POST['mois'];
+    // Création d'un tableau des mois
     $tabMois = array("Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre");
+    // Segmentation de la chaine date pour en extraire le mois 
     $leMois = substr($_POST['mois'], 4,2);
+    // Recherche du mois qui correspond au chiffre extrait dans le tableau précédemment crée
     $leMois = $tabMois[intval($leMois)-1];
-    
+    // Segmentation de la chaine date pour en extraire l'année
     $lAnnee = substr($_POST['mois'], 0,4);
     
-    // Récupération de l'état de la fiche (création, remboursé ...) et de sa date de der,ière modifiaction
+    // Récupération de l'état de la fiche (création, remboursé ...) et de sa date de dernière modifiaction
     $resultatEtatFiche = $connexion->query('SELECT libelle, dateModif
                                     FROM etat E
                                     INNER JOIN fichefrais FF ON E.id = FF.idEtat
                                     WHERE FF.idVisiteur = "'.$id.'"
                                     AND FF.mois = "'.$_POST['mois'].'"');
 
+    // Pour chaque Etat récupérer (normalement un seul)
     while($typeEtat = $resultatEtatFiche->fetch()) {
         $etat = $typeEtat['libelle'];
         $date = $typeEtat['dateModif'];
     }
     $resultatEtatFiche->closeCursor();
     
+    // Affichage de la phrase pour létat de la fiche
     echo "Fiche de frais du mois de ".$leMois." ".$lAnnee." : ".$etat. " depuis le ".$date;
 }
 
@@ -66,32 +71,38 @@ function phraseEtatFiche($connexion, $mois, $id) {
  * @param integer $id
  */
 function montantFiche($connexion, $id) {
+    // Récupération du montant total de la fiche de frais sélectionnée
     $resultatMontantFiche = $connexion->query('SELECT montantValide 
                                  FROM fichefrais 
                                  WHERE idVisiteur="'.$id.'" 
                                  AND mois = "'.$_POST['mois'].'"');
 
+    // A REVOIR ou FAIRE -> enlever la phrase quand montant = 0.00
+    // + Eviter de passer sur des page sans avoir de log
+    // + Enlever le tableau si aucun élément est présent
     if ($ligne = $resultatMontantFiche->fetch()) {
         $montant = $ligne['montantValide'];
         echo '<br/><br/>';
-        echo 'Montant validé : '.$montant.'';
+        echo 'Montant validé : '.$montant.' €';
     }
     $resultatMontantFiche->closeCursor();
 }
 
 /**
- * Fontion qui va afficher les différents éléments non hors forfait de la fiche sélectionnée
+ * Fontion qui va afficher les différents éléments forfait de la fiche sélectionnée
  * @param varchar $connexion
  * @param integer $id
  */
 function ligneTableauForfait($connexion, $id) {
+    // Récupération des éléments forfaits
     $resultatElementForfait = $connexion->query('SELECT quantite
                                   FROM lignefraisforfait 
                                   WHERE idVisiteur="'.$id.'" 
                                   AND mois = "'.$_POST['mois'].'"');
 
-    while($ligne = $resultatElementForfait->fetch()) {
-        $idfrais = $ligne['quantite'];     
+    // Pour chaque élément forfait
+    while($unElementForfait = $resultatElementForfait->fetch()) {
+        $idfrais = $unElementForfait['quantite'];     
         echo  "<td width='25%' align='center'>".$idfrais."</td>";         
     }
     $resultatElementForfait->closeCursor();
@@ -103,15 +114,17 @@ function ligneTableauForfait($connexion, $id) {
  * @param integer $id
  */
 function ligneTableauHorsForfait($connexion, $id) {
+    // Récupération des éléments hors forfaits
     $resultatElementHorsForfait = $connexion->query('SELECT DATE, montant, libelle 
                                   FROM lignefraishorsforfait 
                                   WHERE mois="'.$_POST['mois'].'" 
                                   AND idVisiteur="'.$id.'" order by mois desc');
     
-    while($ligne = $resultatElementHorsForfait->fetch()) {
-        $date = $ligne['DATE'];
-        $montant = $ligne['montant'];
-        $libelle = $ligne['libelle'];
+    // Pour chaque élément hors forfait
+    while($unElementHorsForfait = $resultatElementHorsForfait->fetch()) {
+        $date = $unElementHorsForfait['DATE'];
+        $montant = $unElementHorsForfait['montant'];
+        $libelle = $unElementHorsForfait['libelle'];
 
          echo "
          <tr>
@@ -126,15 +139,20 @@ function ligneTableauHorsForfait($connexion, $id) {
 // Fonction de la page maj_frais_forfait.php
 
 /**
- * Fontion qui va mettre à jour les éléments non hors forfait
+ * Fontion qui va mettre à jour les éléments forfaits
  * @param varchar $connexion
  */
 function updateFraisForfait($connexion) {
+    // Mise a jour du forfait étape
     $connexion->exec ('update lignefraisforfait set quantite = quantite + '.$_POST['etape'].' where idFraisForfait = "ETP" and idVisiteur = "'.$_SESSION['id'].'" and mois = "'.$_SESSION['annee_mois']. '"');
+    // Mise a jour des frais kilométrique
     $connexion->exec ('update lignefraisforfait set quantite = quantite + '.$_POST['km'].' where idFraisForfait = "KM" and idVisiteur = "'.$_SESSION['id'].'" and mois = "'.$_SESSION['annee_mois']. '"');
+    // Mise a jour des nuitées hôtel
     $connexion->exec ('update lignefraisforfait set quantite = quantite + '.$_POST['nuit'].' where idFraisForfait = "NUI" and idVisiteur = "'.$_SESSION['id'].'" and mois = "'.$_SESSION['annee_mois']. '"');
+    // Mise a jour des repas restaurant
     $connexion->exec ('update lignefraisforfait set quantite = quantite + '.$_POST['repas'].' where idFraisForfait = "REP" and idVisiteur = "'.$_SESSION['id'].'" and mois = "'.$_SESSION['annee_mois']. '"');
 
+    // Retour vers la page saisie_frais.php
     header('location: saisie_frais.php');
 }
 
@@ -145,6 +163,7 @@ function updateFraisForfait($connexion) {
  * @param varchar $connexion
  */
 function updateFraisHorsForfait($connexion) {
+    // Récupération du dernier éléement hors forfait
     $idMaxHF = $connexion->query('select MAX(id) as idMax from lignefraishorsforfait');
     $id = $idMaxHF->fetch();
     $idMax = ($id['idMax']+1);
