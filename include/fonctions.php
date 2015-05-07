@@ -62,7 +62,7 @@ function phraseEtatFiche($connexion, $mois, $id) {
     $resultatEtatFiche->closeCursor();
     
     // Affichage de la phrase pour létat de la fiche
-    echo "Fiche de frais du mois de ".$leMois." ".$lAnnee." : ".$etat. " depuis le ".$date;
+    echo "Fiche de frais du mois de ".$leMois." ".$lAnnee." : ".utf8_encode($etat). " depuis le ".$date;
 }
 
 /**
@@ -213,6 +213,7 @@ function creationFicheFrais($connexion, $id){
     }
     $resultatFicheDuMois->closeCursor();
 }
+
 /**
  * Fontion qui recupère la quantite de forfais étape, frais kilometrique, nuitée, et repas restaurant
  * @param varchar $connexion
@@ -242,6 +243,7 @@ function recuperationElementsForfaitises($connexion, $id){
     $repas = $resultatRepas->fetch();
     ?>
     <h3>Tableau recapitulatif des éléments forfaitisé</h3>
+        <table>
             <tr>
                 <td><?php echo $forfaitEtape['quantite']; ?></td>
                 <td><?php echo $fraisKm['quantite']; ?></td>
@@ -252,24 +254,21 @@ function recuperationElementsForfaitises($connexion, $id){
     <?php
     }
     
-    /**
-     * Fontion qui recupère les éléments hors forfaits
-     * @param varchar $connexion
-     * @param integer $id
-     * $resultatHorsForfait -> recupère le libelle, la date et le montant dans la table lignefraishorsforfait quand l'id visiteur = a l'id de l'utilisateur connecté et que le mois = la valeur du mois initialisé dans creationFicheFrais
-     */
-    function recuperationElementsHorsForfait($connexion, $id){
-        $resultatHorsForfait = $connexion->query('select libelle, date, montant from lignefraishorsforfait where idVisiteur = "' .$id. '" and mois = ' .$_SESSION['annee_mois']);
-        while($horsForfait = $resultatHorsForfait->fetch())
-        {
-        ?>
-                    <tr>
-                        <td><?php echo date("d/m/Y", strtotime($horsForfait['date'])); ?></td>
-                        <td><?php echo $horsForfait['libelle']; ?></td>
-                        <td><?php echo $horsForfait['montant']; ?></td>
-                    </tr>
-    <?php
-        }
-        $resultatHorsForfait->closeCursor();
-    }
+/**
+ * Fontion qui recupère les éléments hors forfaits
+ * @param varchar $connexion
+ * @param integer $id
+ * $resultatHorsForfait -> recupère le libelle, la date et le montant dans la table lignefraishorsforfait quand l'id visiteur = a l'id de l'utilisateur connecté et que le mois = la valeur du mois initialisé dans creationFicheFrais
+ */
+function recuperationElementsHorsForfait($connexion, $id){
+    $resultatHorsForfait = $connexion->query('select libelle, date, montant from lignefraishorsforfait where idVisiteur = "' .$id. '" and mois = ' .$_SESSION['annee_mois']);
+    while($horsForfait = $resultatHorsForfait->fetch()) { ?>
+        <tr>
+            <td><?php echo date("d/m/Y", strtotime($horsForfait['date'])); ?></td>
+            <td><?php echo $horsForfait['libelle']; ?></td>
+            <td><?php echo $horsForfait['montant']; ?></td>
+        </tr>
+    <?php }
+    $resultatHorsForfait->closeCursor();
+}
 ?>
