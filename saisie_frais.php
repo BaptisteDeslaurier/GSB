@@ -34,14 +34,22 @@ session_start();
     <form method="post" action="maj_frais_forfait.php" >
         <fieldset>
             <legend>Eléments forfaitisés</legend>
-            <label for="etape">Forfait Etape : </label>
-            <input type="number" name="etape" required=""/></br>
-            <label for="km">Frais Kilomètrique : </label>
-            <input type="number" name="km" required=""/></br>
-            <label for="nuit">Nuitée Hôtel : </label>
-            <input type="number" name="nuit" required=""/></br>
-            <label for="repas">Repas Restaurant : </label>
-            <input type="number" name="repas" required=""/>
+			<p>
+				<label for="etape">Forfait Etape : </label>
+				<input type="number" name="etape" required=""/>
+			</p>
+			<p>
+				<label for="km">Frais Kilomètrique : </label>
+				<input type="number" name="km" required=""/>
+			</p>
+			<p>
+				<label for="nuit">Nuitée Hôtel : </label>
+				<input type="number" name="nuit" required=""/>
+			</p>
+			<p>
+				<label for="repas">Repas Restaurant : </label>
+				<input type="number" name="repas" required=""/>
+			</p>
         </fieldset> 
         <input type="submit" value="Valider"/>
         <input type="reset" value="Réinitialiser"/></br>
@@ -63,12 +71,18 @@ session_start();
     <form method="post" action="maj_frais_hors_forfait.php">
         <fieldset>
             <legend>Frais hors forfait</legend>
-            <label for="date">Date : </label>
-            <input type="date" name="date" required=""/></br>
-            <label for="lib">Libelle : </label>
-            <input type="text" name="libelle" required=""/></br>
-            <label for="montant">Montant : </label>
-            <input type="number" name="montant" required=""/>
+			<p>
+				<label for="date">Date : </label>
+				<input type="date" name="date" required=""/>
+			</p>
+			<p>
+				<label for="lib">Libelle : </label>
+				<input type="text" name="libelle" required=""/>
+			</p>
+			<p>
+				<label for="montant">Montant : </label>
+				<input type="number" name="montant" required=""/>
+			</p>
         </fieldset> 
         <input type="submit" value="Valider"/>
         <input type="reset" value="Réinitialiser"/>

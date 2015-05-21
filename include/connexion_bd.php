@@ -1,9 +1,9 @@
 <?php
 
-$Hostname = "172.16.40.36";
-$NameBDD = "gsb-prod";
-$User = "webmaster";
-$Password = "webmaster";
+$Hostname = "localhost";
+$NameBDD = "gsb";
+$User = "gsb_user";
+$Password = "P@ssword";
 
 try
 {
